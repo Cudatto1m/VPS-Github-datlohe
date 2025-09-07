@@ -22,8 +22,12 @@ function saveVpsUser(githubToken, remoteLink) {
 
 // Check if origin is allowed
 function checkOrigin(origin) {
-  if (!origin) return false;
-  return ALLOWED_ORIGIN_PATTERN.test(origin) || origin.includes('localhost') || origin.includes('127.0.0.1');
+  const allowedOrigins = [
+    "http://localhost:3000",
+    "https://hieuvn.xyz",
+    "https://vps-github-datlohehe.vercel.app/"  // 👈 thêm domain của bạn ở đây
+  ];
+  return allowedOrigins.includes(origin);
 }
 
 // Helper function to create repo secret
