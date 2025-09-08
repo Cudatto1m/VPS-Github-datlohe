@@ -1,7 +1,7 @@
-name: 🚀 VPS Windows with RDP + Cloudflare Tunnel
+name: 🚀 VPS Windows with Cloudflare Tunnel
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:   # Chạy thủ công
 
 jobs:
   build:
@@ -16,33 +16,30 @@ jobs:
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 1
 
-        # Tạo user mới
+        # Tạo user
         net user datlohe Dat@123456 /add
         net localgroup administrators datlohe /add
-
         Write-Host "✅ User: datlohe / Password: Dat@123456"
 
     - name: 🌍 Cài đặt Cloudflared
       run: |
-        Invoke-WebRequest -Uri "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe" -OutFile "cloudflared.exe"
+        Invoke-WebRequest https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe -OutFile cloudflared.exe
+        .\cloudflared.exe --version
 
-    - name: 🚪 Mở Tunnel cho RDP
+    - name: 🚪 Tạo Named Tunnel
       run: |
-        Start-Process -FilePath ".\cloudflared.exe" -ArgumentList "tunnel --url tcp://localhost:3389" -NoNewWindow
-        Start-Sleep -Seconds 15
+        mkdir $env:USERPROFILE\.cloudflared
+        echo "tunnel: vps-tunnel" > $env:USERPROFILE\.cloudflared\config.yml
+        echo "credentials-file: $env:USERPROFILE\.cloudflared\vps-tunnel.json" >> $env:USERPROFILE\.cloudflared\config.yml
+        echo "ingress:" >> $env:USERPROFILE\.cloudflared\config.yml
+        echo "  - service: tcp://localhost:3389" >> $env:USERPROFILE\.cloudflared\config.yml
+        echo "  - service: http_status:404" >> $env:USERPROFILE\.cloudflared\config.yml
 
-        $tunnelInfo = Invoke-RestMethod -Uri "http://127.0.0.1:4040/api/tunnels" -ErrorAction SilentlyContinue
-        if ($tunnelInfo) {
-            $publicUrl = $tunnelInfo.tunnels[0].public_url
-            Write-Host "============================"
-            Write-Host "✅ KẾT NỐI VPS QUA RDP:"
-            Write-Host "👉 $publicUrl"
-            Write-Host "👤 User: datlohe"
-            Write-Host "🔑 Password: Dat@123456"
-            Write-Host "============================"
-        } else {
-            Write-Host "⚠️ Không lấy được URL tunnel, hãy check log Cloudflared."
-        }
+        .\cloudflared.exe tunnel login
+        .\cloudflared.exe tunnel create vps-tunnel
+        .\cloudflared.exe tunnel route dns vps-tunnel vps.$Env:CF_API_EMAIL
+        Start-Process -FilePath ".\cloudflared.exe" -ArgumentList "tunnel run vps-tunnel"
 
-        Write-Host "⏳ Đang duy trì kết nối..."
-        while ($true) { Start-Sleep -Seconds 60 }
+    env:
+      CF_API_EMAIL: ${{ secrets.CF_API_EMAIL }}
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
