@@ -1,42 +1,18 @@
-name: 🚀 VPS Windows with RDP + Ngrok
+ name: 🌍 Cài Ngrok
+  run: |
+    Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
+    Expand-Archive ngrok.zip -DestinationPath .
+    ./ngrok.exe config add-authtoken $Env:NGROK_AUTH_TOKEN
 
-on:
-  workflow_dispatch:   # Chạy thủ công từ tab Actions
-
-jobs:
-  build:
-    runs-on: windows-latest
-    timeout-minutes: 360   # VPS chạy tối đa 6h
-
-    steps:
-    - name: 🔧 Setup Windows RDP
-      run: |
-        # Bật Remote Desktop
-        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -Value 0
-        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 1
-
-        # Tạo user mới
-        net user datlohe Dat@123456 /add
-        net localgroup administrators datlohe /add
-
-        Write-Host "✅ User: datlohe / Password: Dat@123456"
-
-    - name: 🌍 Cài Ngrok
-      run: |
-        Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
-        Expand-Archive ngrok.zip -DestinationPath .
-        ./ngrok config add-authtoken $Env:NGROK_AUTH_TOKEN
-
-        # Mở tunnel RDP (port 3389)
-        Start-Process -FilePath "./ngrok.exe" -ArgumentList "tcp 3389" -NoNewWindow
-
-        Start-Sleep -Seconds 15
-
-        $tunnelInfo = Invoke-RestMethod -Uri http://127.0.0.1:4040/api/tunnels
-        $publicUrl = $tunnelInfo.tunnels[0].public_url
-
-        Write-Host "============================"
-        Write-Host "✅ KẾT NỐI VPS QUA RDP:"
-        Write-Host "👉 $publicUrl"
-        Write-Host "============================"
+    # Mở tunnel RDP (cổng 3389)
+    Start-Process -FilePath "./ngrok.exe" -ArgumentList "tcp 3389" -NoNewWindow
+    
+    Start-Sleep -Seconds 15
+    
+    $tunnelInfo = Invoke-RestMethod -Uri http://127.0.0.1:4040/api/tunnels
+    $publicUrl = $tunnelInfo.tunnels[0].public_url
+    
+    Write-Host "============================"
+    Write-Host "✅ KẾT NỐI VPS QUA RDP:"
+    Write-Host "👉 $publicUrl"
+    Write-Host "============================"
