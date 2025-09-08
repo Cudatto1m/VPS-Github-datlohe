@@ -7,6 +7,9 @@ jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 360   # VPS chạy tối đa 6h
+    
+    env:
+      NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
 
     steps:
     - name: 🔧 Setup Windows RDP
@@ -17,26 +20,70 @@ jobs:
         Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 1
 
         # Tạo user mới
-        net user datlohe Dat@123456 /add
+        net user datlohe "Dat@123456" /add
         net localgroup administrators datlohe /add
 
         Write-Host "✅ User: datlohe / Password: Dat@123456"
 
     - name: 🌍 Cài Ngrok
       run: |
-        Invoke-WebRequest https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
-        Expand-Archive ngrok.zip -DestinationPath .
-        ./ngrok config add-authtoken $Env:NGROK_AUTH_TOKEN
+        # Tải và cài đặt ngrok
+        Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile "ngrok.zip"
+        Expand-Archive -Path "ngrok.zip" -DestinationPath "." -Force
+        Remove-Item -Path "ngrok.zip" -Force
 
-        # Mở tunnel RDP (port 3389)
-        Start-Process -FilePath "./ngrok.exe" -ArgumentList "tcp 3389" -NoNewWindow
+        # Thiết lập authtoken
+        if (-not $Env:NGROK_AUTH_TOKEN) {
+            Write-Error "❌ NGROK_AUTH_TOKEN chưa được thiết lập!"
+            exit 1
+        }
+        
+        .\ngrok.exe config add-authtoken $Env:NGROK_AUTH_TOKEN
+        
+        # Kiểm tra xem authtoken có được thiết lập thành công không
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "❌ Lỗi thiết lập authtoken cho ngrok!"
+            exit 1
+        }
 
-        Start-Sleep -Seconds 15
-
-        $tunnelInfo = Invoke-RestMethod -Uri http://127.0.0.1:4040/api/tunnels
-        $publicUrl = $tunnelInfo.tunnels[0].public_url
-
+        # Khởi chạy ngrok tunnel cho RDP
+        $ngrokProcess = Start-Process -FilePath ".\ngrok.exe" -ArgumentList "tcp 3389" -PassThru -NoNewWindow
+        
+        # Chờ ngrok khởi động
+        Start-Sleep -Seconds 10
+        
+        # Thử lấy thông tin tunnel với retry
+        $maxRetries = 5
+        $retryCount = 0
+        $tunnelInfo = $null
+        
+        while ($retryCount -lt $maxRetries -and $null -eq $tunnelInfo) {
+            try {
+                $tunnelInfo = Invoke-RestMethod -Uri "http://127.0.0.1:4040/api/tunnels" -ErrorAction Stop
+                Write-Host "✅ Kết nối đến ngrok API thành công!"
+            } catch {
+                Write-Host "⏳ Đang thử kết nối lại... ($($retryCount + 1)/$maxRetries)"
+                Start-Sleep -Seconds 5
+                $retryCount++
+            }
+        }
+        
+        if ($null -eq $tunnelInfo) {
+            Write-Error "❌ Không thể kết nối đến ngrok API sau $maxRetries lần thử"
+            exit 1
+        }
+        
+        $publicUrl = $tunnelInfo.tunnels[0].public_url -replace "tcp://", ""
+        
         Write-Host "============================"
         Write-Host "✅ KẾT NỐI VPS QUA RDP:"
-        Write-Host "👉 $publicUrl"
+        Write-Host "👉 Địa chỉ: $publicUrl"
+        Write-Host "👤 User: datlohe"
+        Write-Host "🔑 Password: Dat@123456"
         Write-Host "============================"
+        
+        # Giữ tiến trình chạy
+        Write-Host "⏳ Đang duy trì kết nối..."
+        while ($true) {
+            Start-Sleep -Seconds 60
+        }
