@@ -21,7 +21,6 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            touch-action: none; /* Để touch events tốt hơn */
         }
 
         .container {
@@ -33,7 +32,6 @@
             width: 100%;
             max-width: 500px;
             animation: slideUp 0.8s ease-out;
-            position: relative; /* Để input overlays */
         }
 
         @keyframes slideUp {
@@ -50,30 +48,6 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
-        }
-
-        /* Toggle buttons cho input mới */
-        .input-toggles {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .toggle-btn {
-            padding: 8px 16px;
-            background: rgba(102, 126, 234, 0.1);
-            border: 1px solid #667eea;
-            border-radius: 8px;
-            color: #667eea;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .toggle-btn:hover {
-            background: #667eea;
-            color: white;
         }
 
         .logo {
@@ -346,126 +320,6 @@
             text-decoration: underline;
         }
 
-        /* CSS mới cho bàn phím ảo và gamepad */
-        #virtualKeyboard {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(240, 240, 240, 0.95);
-            padding: 10px;
-            box-sizing: border-box;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            overflow-x: auto;
-        }
-
-        #editControls, #padEditControls {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .key-row {
-            display: flex;
-            justify-content: center;
-            margin: 5px 0;
-            flex-wrap: wrap;
-        }
-
-        .key {
-            width: 40px;
-            height: 40px;
-            margin: 2px;
-            border: 1px solid #ccc;
-            background: #fff;
-            cursor: pointer;
-            font-size: 12px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        .key:active {
-            background: #ddd;
-        }
-
-        .key.selected {
-            background: #ffcc00 !important;
-            border: 2px solid #ff6600;
-        }
-
-        #virtualGamepad {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            width: 300px;
-            height: 400px;
-            background: rgba(224, 224, 224, 0.95);
-            padding: 10px;
-            box-sizing: border-box;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            overflow: auto;
-        }
-
-        .gamepad-layout {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .dpad, .face-buttons, .shoulder, .analog {
-            display: flex;
-            margin: 5px;
-            flex-wrap: wrap;
-        }
-
-        .pad-key {
-            width: 50px;
-            height: 50px;
-            margin: 5px;
-            border: 1px solid #ccc;
-            background: #fff;
-            cursor: pointer;
-            border-radius: 50%;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .pad-key:active {
-            background: #ddd;
-        }
-
-        .pad-key.selected {
-            background: #ffcc00 !important;
-            border: 2px solid #ff6600;
-        }
-
-        .draggable {
-            position: relative;
-            user-select: none;
-        }
-
-        /* Demo div cho test input (xóa nếu không cần) */
-        #testInputArea {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 100px;
-            height: 100px;
-            background: rgba(102, 126, 234, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #667eea;
-            font-size: 12px;
-            z-index: 999;
-        }
-
         @media (max-width: 600px) {
             .container {
                 padding: 30px 20px;
@@ -481,18 +335,11 @@
                 align-items: flex-start;
                 gap: 8px;
             }
-
-            #virtualKeyboard { font-size: 10px; }
-            .key { width: 30px; height: 30px; font-size: 10px; }
-            #virtualGamepad { width: 100%; right: auto; height: 300px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Demo area để test input (di chuyển bằng mouse/touch/phím/gamepad) -->
-        <div id="testInputArea">Test Input<br>Di chuyển tôi!</div>
-
         <div class="header">
             <div class="logo">
                 <i class="fas fa-server"></i>
@@ -500,12 +347,6 @@
             <h1 class="title">VPS Manager</h1>
             <p class="subtitle">Developed by <strong>Datlohehe</strong></p>
             <p class="credits">Based on DuckNoVis Technology</p>
-
-            <!-- Toggle buttons mới cho keyboard và gamepad -->
-            <div class="input-toggles">
-                <button class="toggle-btn" onclick="toggleKeyboard()">Bàn phím ảo</button>
-                <button class="toggle-btn" onclick="toggleGamepad()">Gamepad</button>
-            </div>
         </div>
 
         <div class="nav-tabs">
@@ -586,171 +427,30 @@
         </div>
     </div>
 
-    <!-- Bàn phím ảo đầy đủ (QWERTY) -->
-    <div id="virtualKeyboard">
-        <div id="editControls">
-            <button onclick="addKey()" class="toggle-btn">Thêm nút</button>
-            <button onclick="deleteSelectedKey()" class="toggle-btn">Xóa nút chọn (Right-click select)</button>
-            <button onclick="saveKeyboardLayout()" class="toggle-btn">Lưu layout</button>
-            <button onclick="loadKeyboardLayout()" class="toggle-btn">Tải layout</button>
-        </div>
-        <!-- Hàng F-keys và Esc -->
-        <div class="key-row">
-            <button class="key draggable" data-key="Escape">Esc</button>
-            <button class="key draggable" data-key="F1">F1</button><button class="key draggable" data-key="F2">F2</button><button class="key draggable" data-key="F3">F3</button>
-            <button class="key draggable" data-key="F4">F4</button><button class="key draggable" data-key="F5">F5</button><button class="key draggable" data-key="F6">F6</button>
-            <button class="key draggable" data-key="F7">F7</button><button class="key draggable" data-key="F8">F8</button><button class="key draggable" data-key="F9">F9</button>
-            <button class="key draggable" data-key="F10">F10</button><button class="key draggable" data-key="F11">F11</button><button class="key draggable" data-key="F12">F12</button>
-        </div>
-        <!-- Hàng số -->
-        <div class="key-row">
-            <button class="key draggable" data-key="`">`</button><button class="key draggable" data-key="1">1</button><button class="key draggable" data-key="2">2</button><button class="key draggable" data-key="3">3</button>
-            <button class="key draggable" data-key="4">4</button><button class="key draggable" data-key="5">5</button><button class="key draggable" data-key="6">6</button><button class="key draggable" data-key="7">7</button>
-            <button class="key draggable" data-key="8">8</button><button class="key draggable" data-key="9">9</button><button class="key draggable" data-key="0">0</button><button class="key draggable" data-key="-">-</button>
-            <button class="key draggable" data-key="=">=</button><button class="key draggable" data-key="Backspace" style="width: 80px;">Backspace</button>
-        </div>
-        <!-- Hàng Tab QWERTY -->
-        <div class="key-row">
-            <button class="key draggable" data-key="Tab" style="width: 60px;">Tab</button><button class="key draggable" data-key="Q">Q</button><button class="key draggable" data-key="W">W</button><button class="key draggable" data-key="E">E</button>
-            <button class="key draggable" data-key="R">R</button><button class="key draggable" data-key="T">T</button><button class="key draggable" data-key="Y">Y</button><button class="key draggable" data-key="U">U</button>
-            <button class="key draggable" data-key="I">I</button><button class="key draggable" data-key="O">O</button><button class="key draggable" data-key="P">P</button><button class="key draggable" data-key="[">[ </button>
-            <button class="key draggable" data-key="]"]]</button><button class="key draggable" data-key="\\" style="width: 60px;">\</button>
-        </div>
-        <!-- Hàng Caps ASDF -->
-        <div class="key-row">
-            <button class="key draggable" data-key="CapsLock" style="width: 70px;">Caps</button><button class="key draggable" data-key="A">A</button><button class="key draggable" data-key="S">S</button><button class="key draggable" data-key="D">D</button>
-            <button class="key draggable" data-key="F">F</button><button class="key draggable" data-key="G">G</button><button class="key draggable" data-key="H">H</button><button class="key draggable" data-key="J">J</button>
-            <button class="key draggable" data-key="K">K</button><button class="key draggable" data-key="L">L</button><button class="key draggable" data-key=";">;</button><button class="key draggable" data-key="'">'</button>
-            <button class="key draggable" data-key="Enter" style="width: 70px; height: 60px;">Enter</button>
-        </div>
-        <!-- Hàng Shift ZXCV -->
-        <div class="key-row">
-            <button class="key draggable" data-key="Shift" style="width: 80px;">Shift</button><button class="key draggable" data-key="Z">Z</button><button class="key draggable" data-key="X">X</button><button class="key draggable" data-key="C">C</button>
-            <button class="key draggable" data-key="V">V</button><button class="key draggable" data-key="B">B</button><button class="key draggable" data-key="N">N</button><button class="key draggable" data-key="M">M</button>
-            <button class="key draggable" data-key=",">,</button><button class="key draggable" data-key=".">.</button><button class="key draggable" data-key="/">/</button>
-            <button class="key draggable" data-key="Shift" style="width: 100px;">Shift</button>
-        </div>
-        <!-- Hàng Ctrl Space Arrows -->
-        <div class="key-row">
-            <button class="key draggable" data-key="Ctrl" style="width: 60px;">Ctrl</button><button class="key draggable" data-key="Win">Win</button><button class="key draggable" data-key="Alt" style="width: 60px;">Alt</button>
-            <button class="key draggable" data-key="Space" style="width: 300px; height: 50px;">Space</button>
-            <button class="key draggable" data-key="Alt" style="width: 60px;">Alt</button><button class="key draggable" data-key="Ctrl" style="width: 60px;">Ctrl</button>
-            <button class="key draggable" data-key="LeftArrow" style="width: 50px;">←</button><button class="key draggable" data-key="UpArrow" style="width: 50px;">↑</button>
-            <button class="key draggable" data-key="DownArrow" style="width: 50px;">↓</button><button class="key draggable" data-key="RightArrow" style="width: 50px;">→</button>
-        </div>
-    </div>
-
-    <!-- Gamepad ảo -->
-    <div id="virtualGamepad">
-        <div id="padEditControls">
-            <button onclick="addPadButton()" class="toggle-btn">Thêm nút</button>
-            <button onclick="deleteSelectedPadButton()" class="toggle-btn">Xóa nút chọn (Right-click select)</button>
-            <button onclick="savePadLayout()" class="toggle-btn">Lưu layout</button>
-            <button onclick="loadPadLayout()" class="toggle-btn">Tải layout</button>
-        </div>
-        <div class="gamepad-layout">
-            <div class="dpad">
-                <button class="pad-key draggable" data-button="up">↑</button>
-                <button class="pad-key draggable" data-button="down">↓</button>
-                <button class="pad-key draggable" data-button="left">←</button>
-                <button class="pad-key draggable" data-button="right">→</button>
-            </div>
-            <div class="face-buttons">
-                <button class="pad-key draggable" data-button="A">A</button>
-                <button class="pad-key draggable" data-button="B">B</button>
-                <button class="pad-key draggable" data-button="X">X</button>
-                <button class="pad-key draggable" data-button="Y">Y</button>
-            </div>
-            <div class="shoulder">
-                <button class="pad-key draggable" data-button="LB">LB</button>
-                <button class="pad-key draggable" data-button="RB">RB</button>
-                <button class="pad-key draggable" data-button="LT">LT</button>
-                <button class="pad-key draggable" data-button="RT">RT</button>
-            </div>
-            <div class="analog">
-                <button class="pad-key draggable" data-button="left-stick">LS</button>
-                <button class="pad-key draggable" data-button="right-stick">RS</button>
-            </div>
-            <button class="pad-key draggable" data-button="start">Start</button>
-            <button class="pad-key draggable" data-button="select">Select</button>
-        </div>
-    </div>
-
     <script>
         const API_BASE = '/api';
         
-        // Biến cho input mới
-        let selectedKey = null;
-        let selectedPadButton = null;
-        let testArea = document.getElementById('testInputArea');
-        let testPos = { x: 10, y: 10 }; // Vị trí test area
-        let mouseSensitivity = 1.0;
-
-        // Cập nhật vị trí test area (demo di chuyển)
-        function updateTestPos(x, y) {
-            testPos.x = Math.max(0, Math.min(window.innerWidth - 100, x));
-            testPos.y = Math.max(0, Math.min(window.innerHeight - 100, y));
-            testArea.style.left = testPos.x + 'px';
-            testArea.style.top = testPos.y + 'px';
-        }
-
-        // 1. CHUỘT VÀ TOUCH (global events, di chuyển test area)
-        document.addEventListener('mousemove', (e) => {
-            const x = e.clientX * mouseSensitivity;
-            const y = e.clientY * mouseSensitivity;
-            updateTestPos(x, y); // Demo
-            console.log(`Mouse: ${x}, ${y}`);
-        });
-
-        document.addEventListener('mousedown', (e) => {
-            console.log('Mouse down');
-        });
-
-        document.addEventListener('mouseup', (e) => {
-            console.log('Mouse up');
-        });
-
-        // Touch
-        document.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const x = touch.clientX * mouseSensitivity;
-            const y = touch.clientY * mouseSensitivity;
-            updateTestPos(x, y);
-            console.log(`Touch start: ${x}, ${y}`);
-        }, { passive: false });
-
-        document.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const x = touch.clientX * mouseSensitivity;
-            const y = touch.clientY * mouseSensitivity;
-            updateTestPos(x, y);
-            console.log(`Touch move: ${x}, ${y}`);
-        }, { passive: false });
-
-        document.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            console.log('Touch end');
-        });
-
-        // Tab switching (gốc)
+        // Tab switching
         function switchTab(tab) {
+            // Remove active class from all tabs and content
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Add active class to selected tab and content
             event.target.classList.add('active');
             document.getElementById(tab + '-tab').classList.add('active');
         }
 
-        // Progress bar (gốc)
+        // Progress bar animation
         function updateProgress(percent) {
             const progressBar = document.getElementById('progressBar');
             const progressFill = document.getElementById('progressFill');
+            
             progressBar.style.display = 'block';
             progressFill.style.width = percent + '%';
         }
 
-        // Status message (gốc)
+        // Status message display
         function showStatus(message, type = 'info') {
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.innerHTML = `<div class="status-message status-${type}">
@@ -759,7 +459,7 @@
             </div>`;
         }
 
-        // Show VPS link (gốc)
+        // Display VPS link
         function showVpsLink(url) {
             const linkDiv = document.getElementById('vpsLink');
             linkDiv.innerHTML = `
@@ -775,7 +475,7 @@
             `;
         }
 
-        // Form submission (gốc)
+        // Form submission
         document.getElementById('vpsForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -788,17 +488,20 @@
                 return;
             }
 
+            // Validate GitHub token format
             if (!githubToken.startsWith('ghp_') && !githubToken.startsWith('github_pat_')) {
                 showStatus('GitHub Token không hợp lệ! Token phải bắt đầu bằng "ghp_" hoặc "github_pat_"', 'error');
                 return;
             }
 
             try {
+                // Update UI
                 createBtn.disabled = true;
                 createBtn.innerHTML = '<span class="loading-spinner"></span>Đang tạo VPS...';
                 showStatus('Đang khởi tạo repository và workflow...', 'info');
                 updateProgress(10);
 
+                // API call
                 const response = await fetch(`${API_BASE}/create-vps`, {
                     method: 'POST',
                     headers: {
@@ -815,6 +518,8 @@
                 if (response.ok) {
                     showStatus(`✅ VPS đang được khởi tạo! Repository: ${data.repository}`, 'success');
                     updateProgress(50);
+                    
+                    // Poll for VPS status
                     pollVpsStatus(githubToken);
                 } else {
                     throw new Error(data.error || 'Có lỗi xảy ra khi tạo VPS');
@@ -830,9 +535,9 @@
             }
         });
 
-        // Poll VPS status (gốc)
+        // Poll VPS status
         async function pollVpsStatus(githubToken) {
-            const maxAttempts = 30;
+            const maxAttempts = 30; // 5 minutes
             let attempts = 0;
 
             const pollInterval = setInterval(async () => {
@@ -857,6 +562,8 @@
                         updateProgress(100);
                         showStatus('🎉 VPS đã sẵn sàng! Đang chuyển hướng...', 'success');
                         showVpsLink(data.remote_link);
+                        
+                        // Auto open VPS in new tab after 3 seconds
                         setTimeout(() => {
                             window.open(data.remote_link, '_blank');
                         }, 3000);
@@ -876,10 +583,10 @@
                         updateProgress(0);
                     }
                 }
-            }, 10000);
+            }, 10000); // Check every 10 seconds
         }
 
-        // Load VPS users (gốc)
+        // Load VPS users list
         async function loadVpsUsers() {
             const usersList = document.getElementById('usersList');
             usersList.innerHTML = '<div style="text-align: center; padding: 20px;"><span class="loading-spinner"></span> Đang tải...</div>';
@@ -901,234 +608,4 @@
                                         <i class="fas fa-external-link-alt"></i> Truy cập VPS
                                     </a>
                                 </div>
-                            `).join('')}
-                        </div>
-                    `;
-                } else {
-                    usersList.innerHTML = '<div style="text-align: center; padding: 40px; color: #718096;"><p>Không có VPS nào đang hoạt động.</p></div>';
-                }
-            } catch (error) {
-                console.error('Error loading users:', error);
-                usersList.innerHTML = '<div style="text-align: center; padding: 40px; color: #e53e3e;"><p>Lỗi khi tải danh sách.</p></div>';
-            }
-        }
-
-        // 2. BÀN PHÍM ẢO
-        function toggleKeyboard() {
-            const kb = document.getElementById('virtualKeyboard');
-            kb.style.display = kb.style.display === 'none' ? 'block' : 'none';
-        }
-
-        document.getElementById('virtualKeyboard').addEventListener('click', (e) => {
-            if (e.target.classList.contains('key')) {
-                const key = e.target.dataset.key;
-                console.log(`Key pressed: ${key}`);
-                // Di chuyển test area (demo)
-                if (key === 'ArrowUp' || key === 'w' || key === 'W') testPos.y -= 10;
-                if (key === 'ArrowDown' || key === 's' || key === 'S') testPos.y += 10;
-                if (key === 'ArrowLeft' || key === 'a' || key === 'A') testPos.x -= 10;
-                if (key === 'ArrowRight' || key === 'd' || key === 'D') testPos.x += 10;
-                updateTestPos(testPos.x, testPos.y);
-                // Dispatch event để dùng trong app/VNC
-                document.dispatchEvent(new KeyboardEvent('keydown', { key: key.toLowerCase(), bubbles: true }));
-            }
-        });
-
-        // Chỉnh sửa keyboard
-        document.getElementById('virtualKeyboard').addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            if (e.target.classList.contains('key')) {
-                if (selectedKey) selectedKey.classList.remove('selected');
-                selectedKey = e.target;
-                selectedKey.classList.add('selected');
-            }
-        });
-
-        function addKey() {
-            const newKey = prompt('Nhập key mới (ví dụ: Custom):');
-            if (newKey) {
-                const button = document.createElement('button');
-                button.classList.add('key', 'draggable');
-                button.dataset.key = newKey.toLowerCase();
-                button.textContent = newKey.toUpperCase();
-                document.querySelector('.key-row:last-child').appendChild(button);
-                makeDraggable(button, 'key');
-            }
-        }
-
-        function deleteSelectedKey() {
-            if (selectedKey) {
-                selectedKey.remove();
-                selectedKey = null;
-            }
-        }
-
-        function makeDraggable(el, type = 'key') {
-            el.draggable = true;
-            el.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text/plain', type === 'key' ? el.dataset.key : el.dataset.button);
-            });
-        }
-
-        document.getElementById('virtualKeyboard').addEventListener('dragover', (e) => e.preventDefault());
-        document.getElementById('virtualKeyboard').addEventListener('drop', (e) => {
-            e.preventDefault();
-            const data = e.dataTransfer.getData('text/plain');
-            const draggedEl = Array.from(document.querySelectorAll('.key')).find(b => b.dataset.key === data);
-            if (draggedEl && e.target.closest('.key-row')) {
-                e.target.closest('.key-row').appendChild(draggedEl);
-            }
-        });
-
-        function saveKeyboardLayout() {
-            const layout = Array.from(document.querySelectorAll('.key')).map(el => ({
-                key: el.dataset.key,
-                text: el.textContent
-            }));
-            localStorage.setItem('keyboardLayout', JSON.stringify(layout));
-            alert('Lưu layout bàn phím!');
-        }
-
-        function loadKeyboardLayout() {
-            const saved = localStorage.getItem('keyboardLayout');
-            if (saved) {
-                const layout = JSON.parse(saved);
-                document.querySelectorAll('.key').forEach(el => el.remove());
-                const lastRow = document.querySelector('.key-row:last-child');
-                layout.forEach(item => {
-                    const button = document.createElement('button');
-                    button.classList.add('key', 'draggable');
-                    button.dataset.key = item.key;
-                    button.textContent = item.text;
-                    lastRow.appendChild(button);
-                    makeDraggable(button, 'key');
-                });
-                alert('Tải layout bàn phím!');
-            }
-        }
-
-        // Khởi tạo draggable
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.key').forEach(el => makeDraggable(el, 'key'));
-            document.querySelectorAll('.pad-key').forEach(el => makeDraggable(el, 'pad'));
-        });
-
-        // 3. GAMEPAD
-        function toggleGamepad() {
-            const gp = document.getElementById('virtualGamepad');
-            gp.style.display = gp.style.display === 'none' ? 'block' : 'none';
-        }
-
-        document.getElementById('virtualGamepad').addEventListener('click', (e) => {
-            if (e.target.classList.contains('pad-key')) {
-                const button = e.target.dataset.button;
-                console.log(`Gamepad button: ${button} pressed`);
-                // Demo di chuyển
-                if (button === 'up') testPos.y -= 10;
-                if (button === 'down') testPos.y += 10;
-                if (button === 'left') testPos.x -= 10;
-                if (button === 'right') testPos.x += 10;
-                updateTestPos(testPos.x, testPos.y);
-                document.dispatchEvent(new CustomEvent('gamepadpress', { detail: button, bubbles: true }));
-            }
-        });
-
-        // Gamepad thật
-        let gamepadLoop;
-        window.addEventListener('gamepadconnected', (e) => {
-            console.log('Gamepad connected');
-            gamepadLoop = requestAnimationFrame(updateRealGamepad);
-        });
-
-        window.addEventListener('gamepaddisconnected', () => {
-            console.log('Gamepad disconnected');
-            if (gamepadLoop) cancelAnimationFrame(gamepadLoop);
-        });
-
-        function updateRealGamepad() {
-            const gamepads = navigator.getGamepads();
-            const gp = gamepads[0];
-            if (gp) {
-                // Buttons
-                if (gp.buttons[12].pressed) testPos.y -= 5; // D-up
-                if (gp.buttons[13].pressed) testPos.y += 5;
-                if (gp.buttons[14].pressed) testPos.x -= 5;
-                if (gp.buttons[15].pressed) testPos.x += 5;
-                // Axes
-                const leftX = gp.axes[0];
-                const leftY = gp.axes[1];
-                testPos.x += leftX * 5;
-                testPos.y += leftY * 5;
-                updateTestPos(testPos.x, testPos.y);
-                if (Math.abs(leftX) > 0.1 || Math.abs(leftY) > 0.1) console.log(`Gamepad axis: ${leftX}, ${leftY}`);
-            }
-            gamepadLoop = requestAnimationFrame(updateRealGamepad);
-        }
-
-        // Chỉnh sửa gamepad
-        document.getElementById('virtualGamepad').addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            if (e.target.classList.contains('pad-key')) {
-                if (selectedPadButton) selectedPadButton.classList.remove('selected');
-                selectedPadButton = e.target;
-                selectedPadButton.classList.add('selected');
-            }
-        });
-
-        function addPadButton() {
-            const newBtn = prompt('Nhập button mới (ví dụ: Custom):');
-            if (newBtn) {
-                const button = document.createElement('button');
-                button.classList.add('pad-key', 'draggable');
-                button.dataset.button = newBtn.toLowerCase();
-                button.textContent = newBtn.toUpperCase();
-                document.querySelector('.gamepad-layout').appendChild(button);
-                makeDraggable(button, 'pad');
-            }
-        }
-
-        function deleteSelectedPadButton() {
-            if (selectedPadButton) {
-                selectedPadButton.remove();
-                selectedPadButton = null;
-            }
-        }
-
-        document.getElementById('virtualGamepad').addEventListener('dragover', (e) => e.preventDefault());
-        document.getElementById('virtualGamepad').addEventListener('drop', (e) => {
-            e.preventDefault();
-            const data = e.dataTransfer.getData('text/plain');
-            const draggedEl = Array.from(document.querySelectorAll('.pad-key')).find(b => b.dataset.button === data);
-            if (draggedEl) {
-                document.querySelector('.gamepad-layout').appendChild(draggedEl);
-            }
-        });
-
-        function savePadLayout() {
-            const layout = Array.from(document.querySelectorAll('.pad-key')).map(el => ({
-                button: el.dataset.button,
-                text: el.textContent
-            }));
-            localStorage.setItem('gamepadLayout', JSON.stringify(layout));
-            alert('Lưu layout gamepad!');
-        }
-
-        function loadPadLayout() {
-            const saved = localStorage.getItem('gamepadLayout');
-            if (saved) {
-                const layout = JSON.parse(saved);
-                document.querySelector('.gamepad-layout').innerHTML = '';
-                layout.forEach(item => {
-                    const button = document.createElement('button');
-                    button.classList.add('pad-key', 'draggable');
-                    button.dataset.button = item.button;
-                    button.textContent = item.text;
-                    document.querySelector('.gamepad-layout').appendChild(button);
-                    makeDraggable(button, 'pad');
-                });
-                alert('Tải layout gamepad!');
-            }
-        }
-    </script>
-</body>
-</html>
+                  
