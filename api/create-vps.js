@@ -607,7 +607,7 @@ export default async (req, res) => {
       name: repoName,
       private: false,
       auto_init: true,
-      description: 'VPS Manager - Created by Hiếu Dz'
+      description: 'VPS Manager - Created by datlohehe'
     });
     const repoFullName = repo.full_name;
     const ngrokServerUrl = `https://${req.headers.host}`;
